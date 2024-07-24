@@ -25,7 +25,6 @@ namespace Questao1 {
             Console.WriteLine();
             Console.WriteLine("Dados da conta:");
             conta.MostrarDadosConta();
-
             Console.WriteLine();
             Console.Write("Entre um valor para depósito: ");
             double quantia = double.Parse(Console.ReadLine(), CultureInfo.InvariantCulture);

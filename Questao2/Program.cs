@@ -1,4 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 
 public class Program
 {
@@ -23,8 +28,56 @@ public class Program
 
     public static int getTotalScoredGoals(string team, int year)
     {
-        
-        return 0;
-    }
+        int totalGoals = 0;
+        int page = 1;
+        bool hasMorePages = true;
 
+        using (HttpClient client = new HttpClient())
+        {
+            while (hasMorePages)
+            {
+                string url = $"https://jsonmock.hackerrank.com/api/football_matches?year={year}&team1={team}&page={page}";
+                HttpResponseMessage response = client.GetAsync(url).Result;
+                string responseData = response.Content.ReadAsStringAsync().Result;
+                JObject json = JObject.Parse(responseData);
+
+                foreach (var match in json["data"])
+                {
+                    totalGoals += int.Parse(match["team1goals"].ToString());
+                }
+
+                int totalPages = int.Parse(json["total_pages"].ToString());
+                if (page >= totalPages)
+                {
+                    hasMorePages = false;
+                }
+                page++;
+            }
+
+            page = 1;
+            hasMorePages = true;
+
+            while (hasMorePages)
+            {
+                string url = $"https://jsonmock.hackerrank.com/api/football_matches?year={year}&team2={team}&page={page}";
+                HttpResponseMessage response = client.GetAsync(url).Result;
+                string responseData = response.Content.ReadAsStringAsync().Result;
+                JObject json = JObject.Parse(responseData);
+
+                foreach (var match in json["data"])
+                {
+                    totalGoals += int.Parse(match["team2goals"].ToString());
+                }
+
+                int totalPages = int.Parse(json["total_pages"].ToString());
+                if (page >= totalPages)
+                {
+                    hasMorePages = false;
+                }
+                page++;
+            }
+        }
+
+        return totalGoals;
+    }
 }

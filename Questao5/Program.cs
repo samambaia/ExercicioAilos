@@ -1,25 +1,46 @@
 using MediatR;
+using Microsoft.Data.Sqlite;
+using MyProject.Application.Handlers;
+using MyProject.Infrastructure.Repositories;
+using Questao5.Infrastructure.Database;
+using Questao5.Infrastructure.Repositories;
 using Questao5.Infrastructure.Sqlite;
-using System.Reflection;
+using System.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
 
-builder.Services.AddMediatR(Assembly.GetExecutingAssembly());
+// Register MediatR and specify the assembly containing the handlers
+builder.Services.AddMediatR(typeof(MovimentacaoCommandHandler).Assembly);
 
-// sqlite
+// Register database configuration and bootstrap
 builder.Services.AddSingleton(new DatabaseConfig { Name = builder.Configuration.GetValue<string>("DatabaseName", "Data Source=database.sqlite") });
 builder.Services.AddSingleton<IDatabaseBootstrap, DatabaseBootstrap>();
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Register IDbConnection for Dapper
+builder.Services.AddScoped<IDbConnection>(sp =>
+{
+    var config = sp.GetRequiredService<DatabaseConfig>();
+    return new SqliteConnection(config.Name);
+});
+
+// Register repositories
+builder.Services.AddScoped<IContaCorrenteRepository, ContaCorrenteRepository>();
+builder.Services.AddScoped<IMovimentoRepository, MovimentoRepository>();
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddScoped<IDbConnection>(sp =>
+{
+    var config = sp.GetRequiredService<DatabaseConfig>();
+    return new SqliteConnection(config.Name);
+});
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -32,14 +53,18 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-// sqlite
-#pragma warning disable CS8602 // Dereference of a possibly null reference.
-app.Services.GetService<IDatabaseBootstrap>().Setup();
-#pragma warning restore CS8602 // Dereference of a possibly null reference.
+// Initialize the database
+var databaseBootstrap = app.Services.GetService<IDatabaseBootstrap>();
+if (databaseBootstrap != null)
+{
+    databaseBootstrap.Setup();
+}
+else
+{
+    throw new InvalidOperationException("Database bootstrap service is not registered.");
+}
 
 app.Run();
 
 // Informações úteis:
 // Tipos do Sqlite - https://www.sqlite.org/datatype3.html
-
-

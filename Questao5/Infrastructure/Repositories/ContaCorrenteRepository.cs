@@ -1,11 +1,8 @@
 ﻿using Dapper;
 using Questao5.Domain.Entities;
-using Questao5.Application.Interfaces;
-using System.Threading.Tasks;
 using System.Data;
-using Questao5.Infrastructure.Repositories;
 
-namespace MyProject.Infrastructure.Repositories
+namespace Questao5.Infrastructure.Repositories
 {
     public class ContaCorrenteRepository : IContaCorrenteRepository
     {
@@ -16,9 +13,9 @@ namespace MyProject.Infrastructure.Repositories
             _dbConnection = dbConnection;
         }
 
-        public Task<ContaCorrente> GetByIdAsync(int id)
+        public Task<ContaCorrente> GetByIdAsync(string id)
         {
-            var query = "SELECT * FROM ContaCorrente WHERE Id = @Id";
+            var query = "SELECT * FROM ContaCorrente WHERE IdContaCorrente = @Id";
             return _dbConnection.QueryFirstOrDefaultAsync<ContaCorrente>(query, new { Id = id });
         }
     }

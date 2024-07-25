@@ -7,6 +7,26 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Domain\Enumerators\**" />
+    <Compile Remove="Domain\Language\**" />
+    <Compile Remove="Infrastructure\Database\**" />
+    <Content Remove="Domain\Enumerators\**" />
+    <Content Remove="Domain\Language\**" />
+    <Content Remove="Infrastructure\Database\**" />
+    <EmbeddedResource Remove="Domain\Enumerators\**" />
+    <EmbeddedResource Remove="Domain\Language\**" />
+    <EmbeddedResource Remove="Infrastructure\Database\**" />
+    <None Remove="Domain\Enumerators\**" />
+    <None Remove="Domain\Language\**" />
+    <None Remove="Infrastructure\Database\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Application\Queries\Requests\__ConsultaSaldoQuery.cs" />
+    <Compile Remove="Application\Queries\Responses\__SaldoResponse.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
 	<PackageReference Include="Dapper" Version="2.0.35" />
 	<PackageReference Include="Microsoft.Data.Sqlite" Version="3.1.6" />
@@ -30,15 +50,6 @@
 		<PrivateAssets>all</PrivateAssets>
 		<IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
 	</PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Domain\Enumerators\" />
-    <Folder Include="Domain\Language\" />
-    <Folder Include="Infrastructure\Database\CommandStore\Requests\" />
-    <Folder Include="Infrastructure\Database\CommandStore\Responses\" />
-    <Folder Include="Infrastructure\Database\QueryStore\Requests\" />
-    <Folder Include="Infrastructure\Database\QueryStore\Responses\" />
   </ItemGroup>
 
 </Project>

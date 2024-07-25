@@ -1,23 +1,17 @@
 using MediatR;
 using Questao5.Application.Queries.Requests;
 using Questao5.Application.Queries.Responses;
-using Questao5.Application.Interfaces;
-using System;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using Volo.Abp;
-using MyProject.Infrastructure.Repositories;
 using Questao5.Infrastructure.Repositories;
+using Volo.Abp;
 
 namespace Questao5.Application.Handlers
 {
-    public class SaldoContaCorrenteQueryHandler : IRequestHandler<SaldoContaCorrenteQuery, SaldoContaCorrenteResponse>
+    public class SaldoContaCorrenteCommandHandler : IRequestHandler<SaldoContaCorrenteQuery, SaldoContaCorrenteResponse>
     {
         private readonly IContaCorrenteRepository _contaCorrenteRepository;
         private readonly IMovimentoRepository _movimentacaoRepository;
 
-        public SaldoContaCorrenteQueryHandler(IContaCorrenteRepository contaCorrenteRepository, IMovimentoRepository movimentacaoRepository)
+        public SaldoContaCorrenteCommandHandler(IContaCorrenteRepository contaCorrenteRepository, IMovimentoRepository movimentacaoRepository)
         {
             _contaCorrenteRepository = contaCorrenteRepository;
             _movimentacaoRepository = movimentacaoRepository;
@@ -31,19 +25,14 @@ namespace Questao5.Application.Handlers
                 throw new BusinessException("Invalid account.", "INVALID_ACCOUNT");
             }
 
-            if (conta.TipoConta != "CORRENTE")
-            {
-                throw new BusinessException("Inactive account.", "INACTIVE_ACCOUNT");
-            }
-
-            if (!conta.Ativa)
+            if (!conta.Ativo)
             {
                 throw new BusinessException("Inactive account.", "INACTIVE_ACCOUNT");
             }
 
             var movimentacoes = await _movimentacaoRepository.GetByContaCorrenteIdAsync(request.IdContaCorrente);
-            var saldo = movimentacoes.Where(m => m.TipoMovimento == "CREDIT").Sum(m => m.Valor) -
-                        movimentacoes.Where(m => m.TipoMovimento == "DEBIT").Sum(m => m.Valor);
+            var saldo = movimentacoes.Where(m => m.TipoMovimento == "C").Sum(m => m.Valor) -
+                        movimentacoes.Where(m => m.TipoMovimento == "D").Sum(m => m.Valor);
 
             return new SaldoContaCorrenteResponse
             {

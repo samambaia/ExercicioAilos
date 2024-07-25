@@ -5,6 +5,6 @@ namespace Questao5.Infrastructure.Repositories
 {
     public interface IContaCorrenteRepository
     {
-        Task<ContaCorrente> GetByIdAsync(int id);
+        Task<ContaCorrente> GetByIdAsync(string id);
     }
 }

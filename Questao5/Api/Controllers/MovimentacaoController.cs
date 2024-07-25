@@ -1,11 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Questao5.Application.Commands.Requests;
-using Questao5.Application.Commands.Responses;
-using System;
-using System.Threading.Tasks;
 
-namespace MyProject.API.Controllers
+namespace Questao5.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -18,7 +15,7 @@ namespace MyProject.API.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost]
+        [HttpPost("movimentacao")]
         public async Task<IActionResult> Post([FromBody] MovimentacaoCommand command)
         {
             try

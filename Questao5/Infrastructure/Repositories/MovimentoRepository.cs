@@ -1,50 +1,42 @@
 ﻿using Dapper;
 using Questao5.Domain.Entities;
-using Questao5.Application.Interfaces;
-using Questao5.Infrastructure.Database;
-using System.Collections.Generic;
 using System.Data;
-using System.Threading.Tasks;
-using Questao5.Infrastructure.Repositories;
 
-namespace MyProject.Infrastructure.Repositories
+namespace Questao5.Infrastructure.Repositories
 {
     public class MovimentoRepository : IMovimentoRepository
     {
-        private readonly DatabaseContext _context;
+        private readonly IDbConnection _context;
 
-        public MovimentoRepository(DatabaseContext context)
+        public MovimentoRepository(IDbConnection context)
         {
             _context = context;
         }
 
-        public async Task<int> AddAsync(Movimento movimento)
+        public async Task<string> AddAsync(Movimento movimento)
         {
-            using (var connection = _context.CreateConnection())
-            {
-                var query = "INSERT INTO movimento (idcontacorrente, valor, tipomovimento, datamovimento) " +
-                            "VALUES (@ContaId, @Valor, @Tipo, @DataMovimento); " +
-                            "SELECT last_insert_rowid();";
-                return await connection.ExecuteScalarAsync<int>(query, movimento);
-            }
+            var query = "INSERT INTO movimento (idmovimento, idcontacorrente, valor, tipomovimento, datamovimento) " +
+                        "VALUES (@IdMovimento, @IdContaCorrente, @Valor, @TipoMovimento, @DataMovimento); ";
+            await _context.ExecuteScalarAsync<string>(query, movimento);
+            return movimento.IdMovimento;
         }
 
-        public Task<IEnumerable<Movimento>> GetByContaCorrenteIdAsync(int contaCorrenteId)
+        public Task<IEnumerable<Movimento>> GetByContaCorrenteIdAsync(string contaCorrenteId)
         {
-            using (var connection = _context.CreateConnection())
-            {
-                var query = "SELECT * FROM Movimentos WHERE IdContaCorrente = @ContaCorrenteId";
-                return connection.QueryAsync<Movimento>(query, new { ContaCorrenteId = contaCorrenteId });
-            }
+            var query = "SELECT * FROM movimento WHERE IdContaCorrente = @ContaCorrenteId";
+            return _context.QueryAsync<Movimento>(query, new { ContaCorrenteId = contaCorrenteId });
+        }
+
+        public async Task<IEnumerable<IdemPotencia>> GetByIdemPotenciaAsync(string chaveIdemPotencia)
+        {
+            return await _context.QueryAsync<IdemPotencia>(
+                "SELECT * FROM idempotencia WHERE chave_idempotencia = @ChaveIdemPotencia", new { ChaveIdemPotencia = chaveIdemPotencia });
         }
 
         public async Task<Movimento> GetByRequestIdAsync(Guid requestId)
         {
-            using (var connection = _context.CreateConnection())
-            {
-                return await connection.QueryFirstOrDefaultAsync<Movimento>(
-                    "SELECT * FROM movimento WHERE requestid = @RequestId", new { RequestId = requestId });
-            }
+            return await _context.QueryFirstOrDefaultAsync<Movimento>(
+                "SELECT * FROM movimento WHERE requestid = @RequestId", new { RequestId = requestId });
         }
     }
 }

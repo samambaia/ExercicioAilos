@@ -1,5 +1,4 @@
 ﻿using MediatR;
-using System.Threading.Tasks;
 
 namespace Questao5.Application.Interfaces
 {

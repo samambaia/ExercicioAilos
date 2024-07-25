@@ -2,7 +2,7 @@
 using MediatR;
 using Questao5.Application.Interfaces;
 
-namespace Questao5.Application.Mediator
+namespace Questao5.Application.Handlers
 {
     public class MediatorHandler : IMediatorHandler
     {

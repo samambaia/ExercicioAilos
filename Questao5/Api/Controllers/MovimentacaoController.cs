@@ -15,7 +15,7 @@ namespace Questao5.API.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost("movimentacao")]
+        [HttpPost("movimento")]
         public async Task<IActionResult> Post([FromBody] MovimentacaoCommand command)
         {
             try
